@@ -6,6 +6,7 @@
     xmlns:local="clr-namespace:UiDesktopApp2.Views.Windows"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    
     Title="{Binding ViewModel.ApplicationTitle, Mode=OneWay}"
     Height="900"
     Width="1400"
