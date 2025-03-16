@@ -27,7 +27,7 @@ namespace UiDesktopApp2.Services
 
         private EsolutionPopulation GetEntityById(int? id)
         {
-            var entity = esolutionDatabaseContext?.EsolutionPopulations.Find(id);
+            var entity = esolutionDatabaseContext?.EsolutionPopulations.Find(id); //db에서 id로 entity 찾고 행 반환
             if (entity == null)
                 throw new KeyNotFoundException("Entity not found.");
             return entity;
@@ -55,8 +55,8 @@ namespace UiDesktopApp2.Services
         {
             try
             {
-                var entity = GetEntityById(id);
-                esolutionDatabaseContext?.Remove(entity);
+                var entity = GetEntityById(id); //
+                esolutionDatabaseContext?.Remove(entity); //db에서 entity 삭제
                 esolutionDatabaseContext?.SaveChanges();
             }
             catch (Exception ex)

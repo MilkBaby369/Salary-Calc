@@ -194,7 +194,7 @@ namespace UiDesktopApp2.ViewModels.Pages
                 this.EmployeeNumber = this.EsolutionPopulations.Select(x => x.EmployeeNumber.ToString());
             }
 
-
+            
             isinitialized = true;
 
 

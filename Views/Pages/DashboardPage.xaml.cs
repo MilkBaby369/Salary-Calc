@@ -17,11 +17,13 @@ namespace UiDesktopApp2.Views.Pages
 
         public DashboardPage(DashboardViewModel viewModel)
         {
+            InitializeComponent();
+
             ViewModel = viewModel;
             DataContext = this;
 
             ViewModel.PropertyChanged += ViewModel_PropertyChanged;
-            InitializeComponent();    
+         
         }
 
         private void ComboBox_DropDownOpened(object sender, EventArgs e)

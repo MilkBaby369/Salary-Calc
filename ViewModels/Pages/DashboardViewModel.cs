@@ -18,6 +18,8 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Text.Json;
 using System.ComponentModel;
+using System.Collections.Concurrent;
+using System.Reflection;
 
 namespace UiDesktopApp2.ViewModels.Pages
 {
@@ -34,9 +36,9 @@ namespace UiDesktopApp2.ViewModels.Pages
         #endregion
         #region PROPERTIES
       
-        // EsolutionPopulation 리스트
+        // EsolutionPopulation 리스트  
         [ObservableProperty]
-        private IEnumerable<EsolutionPopulation>? esolutionPopulations;
+        private IEnumerable<EsolutionPopulation> esolutionPopulations;
 
         // 선택된 Employee 데이터 (바인딩용)
         [ObservableProperty]
@@ -131,6 +133,8 @@ namespace UiDesktopApp2.ViewModels.Pages
         [ObservableProperty]
         private EsolutionPopulation? selectedEntity; // 선택된 데이터
 
+
+
         // ..............................................................
 
         #endregion
@@ -189,7 +193,7 @@ namespace UiDesktopApp2.ViewModels.Pages
 
             var result = System.Windows.MessageBox.Show("선택된 데이터를 삭제하시겠습니까 ?", "데이터 삭제", System.Windows.MessageBoxButton.YesNo, MessageBoxImage.Question);
 
-            if (result == System.Windows.MessageBoxResult.Yes)
+            if (result == System.Windows.MessageBoxResult.Yes) // 사용자가 Yes를 클릭하면 데이터 삭제
             {
                 try
                 {
@@ -330,7 +334,7 @@ namespace UiDesktopApp2.ViewModels.Pages
 
                     // DB에서 기존 데이터를 가져옴 (동일 EmployeeNumber 기준)
 
-                    var dbEntity = await Task.Run(() => databaseService.GetDetail(currentEntity.EmployeeNumber)).ConfigureAwait(false);
+                    var dbEntity = await Task.Run(() => databaseService.GetDetail(currentEntity.EmployeeNumber)).ConfigureAwait(false); // 작업이 완료되기까지 기다림 (비동기)
 
                     if (dbEntity == null)
                     {
@@ -355,8 +359,8 @@ namespace UiDesktopApp2.ViewModels.Pages
 
 
                 //// (원하는 경우) 저장 후 최신 DB 데이터를 다시 UI에 반영
-                //ReadAllData();
-                //await RefreshDataAsync();
+                this.EmployeeNumber = this.EsolutionPopulations.Select(x => x.EmployeeNumber.ToString());
+                await RefreshDataAsync();
             }
             catch (Exception ex)
             {
@@ -364,24 +368,24 @@ namespace UiDesktopApp2.ViewModels.Pages
             }
         }
 
+        private readonly ConcurrentDictionary<Type, PropertyInfo[]> PropertyCache = new();
+
         private bool AreEntitiesEqual(object dbEntity, object currentEntity)
         {
-            if (dbEntity == null || currentEntity == null)
+            if (dbEntity == null || currentEntity == null) // 클래스가 null인 경우 false 반환
                 return false;
 
             // 두 객체의 타입이 동일한지 확인
-            if (dbEntity.GetType() != currentEntity.GetType())
+            var type = dbEntity.GetType();
+            if (dbEntity.GetType() != currentEntity.GetType()) 
                 return false;
 
             // 성능 최적화를 위해 PropertyInfo를 캐싱
-            var properties = dbEntity.GetType().GetProperties();
+            var properties = PropertyCache.GetOrAdd(type, t => t.GetProperties());
 
             foreach (var prop in properties)
             {
-                // 특정 속성을 제외하려면 조건 추가 (예: "LastModified" 같은 시스템 필드)
-                if (prop.Name == "LastModified")
-                    continue;
-
+             
                 var dbValue = prop.GetValue(dbEntity);
                 var currentValue = prop.GetValue(currentEntity);
 
