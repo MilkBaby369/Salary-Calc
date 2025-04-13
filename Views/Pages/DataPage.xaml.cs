@@ -56,7 +56,7 @@ namespace UiDesktopApp2.Views.Pages
 
             // EmailWindow에 파일 경로 전달
             EmailWindow emailWindow = new EmailWindow(capturePath);
-            emailWindow.ShowDialog();
+            emailWindow.ShowDialog(); // 기존 ui 창을 닫지 않고 대화상자처럼 띄우고 이전 창을 비활성화
         }
 
         public void CaptureUIElement(UIElement element, string savePath)

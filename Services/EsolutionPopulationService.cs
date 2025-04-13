@@ -65,15 +65,15 @@ namespace UiDesktopApp2.Services
                 throw new ApplicationException("An error occurred while deleting the entity.", ex);
             }
         }
-
+        
         public List<EsolutionPopulation>? Get()
         {
             return esolutionDatabaseContext?.EsolutionPopulations.ToList();
         }
 
-        public EsolutionPopulation? GetDetail(int? name)
+        public EsolutionPopulation? GetDetail(int? name) //
         {
-            return esolutionDatabaseContext?.EsolutionPopulations.Find(name);
+            return esolutionDatabaseContext?.EsolutionPopulations.Find(name); //db에서 name으로 행 반환 employeeNumber가 갖고 있는 값은 name
         }
 
         public void NotifyUpdate(EsolutionPopulation update)

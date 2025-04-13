@@ -38,7 +38,7 @@ namespace UiDesktopApp2.ViewModels.Pages
       
         // EsolutionPopulation 리스트  
         [ObservableProperty]
-        private IEnumerable<EsolutionPopulation> esolutionPopulations;
+        private IEnumerable<EsolutionPopulation> esolutionPopulations; //ViewModel과 View를 연결하는 ObservableCollection<EsolutionPopulation> 속성
 
         // 선택된 Employee 데이터 (바인딩용)
         [ObservableProperty]
@@ -142,7 +142,7 @@ namespace UiDesktopApp2.ViewModels.Pages
         #region CONSTRUCTOR
 
         public DashboardViewModel(ISalary<EsolutionPopulation> salaryService, IDatabase<EsolutionPopulation> databaseService)
-        // 두 개의 인터페이스를 의존성 주입으로 받음
+        // DI 컨테이너 에서 ISalary<EsolutionPopulation>과 IDatabase<EsolutionPopulation>을 주입받음
         {
             this.salaryService = salaryService ?? throw new ArgumentNullException(nameof(salaryService));
             this.databaseService = databaseService ?? throw new ArgumentNullException(nameof(databaseService));
@@ -326,7 +326,7 @@ namespace UiDesktopApp2.ViewModels.Pages
                 int updateCount = 0;
 
                 // 각 엔티티에 대해 DB에 있는 기존 데이터와 비교
-                foreach (var currentEntity in EsolutionPopulations)
+                foreach (var currentEntity in EsolutionPopulations) 
                 {
                     // 필수 값 확인 (예: EmployeeNumber가 0이면 무시)
                     if (currentEntity.EmployeeNumber == 0)
@@ -334,11 +334,11 @@ namespace UiDesktopApp2.ViewModels.Pages
 
                     // DB에서 기존 데이터를 가져옴 (동일 EmployeeNumber 기준)
 
-                    var dbEntity = await Task.Run(() => databaseService.GetDetail(currentEntity.EmployeeNumber)).ConfigureAwait(false); // 작업이 완료되기까지 기다림 (비동기)
+                    var dbEntity = await Task.Run(() => databaseService.GetDetail(currentEntity.EmployeeNumber));
 
                     if (dbEntity == null)
                     {
-                        // 기존 데이터가 없는 경우 신규 생성 처리 (원하신다면)
+                        // 기존 데이터가 없는 경우 신규 생성 처리
                         await Task.Run(() => databaseService.Create(currentEntity)).ConfigureAwait(false);
                         updateCount++;
                     }
@@ -376,7 +376,7 @@ namespace UiDesktopApp2.ViewModels.Pages
                 return false;
 
             // 두 객체의 타입이 동일한지 확인
-            var type = dbEntity.GetType();
+            var type = dbEntity.GetType(); //Type은 클래스의 메타데이터를 가지고 있음
             if (dbEntity.GetType() != currentEntity.GetType()) 
                 return false;
 
